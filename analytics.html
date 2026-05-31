@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDFMagic — Analytics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0B0F1A;--surface:#111827;--surface2:#1a2235;--border:#1f2d45;
+  --accent:#3B82F6;--accent2:#10B981;--accent3:#F59E0B;--accent4:#EF4444;
+  --text:#E2E8F0;--text2:#94A3B8;--text3:#475569;
+  --radius:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:20px 12px;flex-shrink:0;}
+.s-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);display:flex;align-items:center;gap:8px;margin-bottom:28px;padding:0 8px;}
+.s-logo .dot{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.s-logo .dot svg{width:14px;height:14px;fill:white;}
+.s-logo span{color:var(--accent);}
+.s-section{font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text3);padding:0 8px;margin-bottom:6px;margin-top:20px;}
+.s-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);transition:all .15s;border:none;background:none;width:100%;text-align:left;font-family:'DM Sans',sans-serif;}
+.s-item svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0;}
+.s-item:hover{background:var(--surface2);color:var(--text);}
+.s-item.active{background:rgba(59,130,246,.15);color:var(--accent);}
+.s-badge{margin-left:auto;font-size:10px;font-weight:600;background:var(--accent);color:white;padding:2px 7px;border-radius:20px;}
+.sidebar-foot{margin-top:auto;padding:12px;background:var(--surface2);border-radius:10px;border:1px solid var(--border);}
+.foot-label{font-size:11px;color:var(--text3);margin-bottom:6px;}
+.foot-bar{height:4px;background:var(--border);border-radius:100px;overflow:hidden;margin-bottom:4px;}
+.foot-fill{height:100%;background:var(--accent);width:33%;border-radius:100px;}
+.foot-text{font-size:11px;color:var(--text2);}
+.foot-upgrade{font-size:11px;color:var(--accent);cursor:pointer;display:block;margin-top:8px;}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column;}
+
+/* TOPBAR */
+.topbar{padding:16px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface);position:sticky;top:0;z-index:10;}
+.topbar-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.date-picker{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:7px 14px;border-radius:8px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;}
+.date-picker svg{width:14px;height:14px;stroke:var(--text2);fill:none;stroke-width:2;}
+.export-btn{background:var(--accent);color:white;border:none;padding:7px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:6px;}
+.export-btn svg{width:13px;height:13px;stroke:white;fill:none;stroke-width:2;}
+.notif-btn{width:34px;height:34px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;}
+.notif-btn svg{width:15px;height:15px;stroke:var(--text2);fill:none;stroke-width:2;}
+.notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--accent4);border-radius:50%;}
+
+/* BODY */
+.body{padding:24px 28px;flex:1;}
+
+/* KPI CARDS */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.kpi-label{font-size:12px;color:var(--text2);font-weight:500;}
+.kpi-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.kpi-icon svg{width:15px;height:15px;fill:none;stroke-width:2;}
+.kpi-val{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;line-height:1;margin-bottom:6px;}
+.kpi-change{font-size:12px;display:flex;align-items:center;gap:4px;}
+.kpi-change.up{color:var(--accent2);}
+.kpi-change.down{color:var(--accent4);}
+.kpi-change svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2.5;}
+
+/* CHARTS ROW */
+.charts-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:24px;}
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.chart-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.chart-title{font-size:14px;font-weight:500;}
+.chart-tabs{display:flex;gap:4px;background:var(--surface2);padding:3px;border-radius:7px;}
+.chart-tab{font-size:11px;padding:4px 10px;border-radius:5px;cursor:pointer;color:var(--text3);border:none;background:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.chart-tab.active{background:var(--accent);color:white;}
+.chart-wrap{position:relative;height:200px;}
+
+/* DONUT */
+.donut-wrap{display:flex;flex-direction:column;align-items:center;}
+.donut-chart-wrap{position:relative;height:180px;width:180px;}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.donut-center-val{font-family:'Syne',sans-serif;font-size:24px;font-weight:700;}
+.donut-center-label{font-size:11px;color:var(--text2);}
+.donut-legend{width:100%;margin-top:16px;display:flex;flex-direction:column;gap:8px;}
+.legend-item{display:flex;align-items:center;justify-content:space-between;font-size:12px;}
+.legend-left{display:flex;align-items:center;gap:8px;color:var(--text2);}
+.legend-dot{width:8px;height:8px;border-radius:50%;}
+.legend-pct{font-weight:500;color:var(--text);}
+
+/* BOTTOM GRID */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+
+/* TABLE */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;grid-column:span 2;}
+.table-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.table-title{font-size:14px;font-weight:500;}
+.view-all{font-size:12px;color:var(--accent);cursor:pointer;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);}
+td{font-size:13px;padding:10px 12px;border-bottom:1px solid var(--border);color:var(--text2);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--surface2);}
+.country-flag{font-size:16px;margin-right:6px;}
+.progress-bar{width:80px;height:4px;background:var(--border);border-radius:100px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--accent);border-radius:100px;}
+.status-badge{font-size:11px;padding:3px 9px;border-radius:20px;font-weight:500;}
+.status-pro{background:rgba(16,185,129,.15);color:var(--accent2);}
+.status-free{background:var(--surface2);color:var(--text3);}
+
+/* ACTIVITY */
+.activity-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.activity-list{display:flex;flex-direction:column;gap:0;}
+.activity-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.activity-item:last-child{border-bottom:none;}
+.act-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.act-body{flex:1;}
+.act-title{font-size:13px;font-weight:500;margin-bottom:2px;}
+.act-time{font-size:11px;color:var(--text3);}
+
+/* MINI STATS */
+.mini-stats{display:flex;flex-direction:column;gap:12px;}
+.mini-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
+.ms-label{font-size:12px;color:var(--text2);margin-bottom:8px;}
+.ms-val{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:6px;}
+.ms-bar{height:3px;background:var(--border);border-radius:100px;overflow:hidden;}
+.ms-fill{height:100%;border-radius:100px;}
+
+@media(max-width:1100px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.charts-row{grid-template-columns:1fr}.bottom-grid{grid-template-columns:1fr}}
+@media(max-width:768px){.sidebar{display:none}.body{padding:16px}}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="s-logo">
+    <div class="dot"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    PDF<span>Magic</span>
+  </div>
+
+  <div class="s-section">Main</div>
+  <button class="s-item" onclick="window.location='app.html'"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Dashboard</button>
+  <button class="s-item active"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Analytics<span class="s-badge">Live</span></button>
+  <button class="s-item"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Revenue</button>
+  <button class="s-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Users</button>
+
+  <div class="s-section">Tools</div>
+  <button class="s-item" onclick="window.location='app.html'"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/></svg>PDF Tool</button>
+  <button class="s-item"><svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>API Usage</button>
+  <button class="s-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14"/><path d="M4.93 4.93a10 10 0 000 14.14"/></svg>SEO</button>
+
+  <div class="s-section">Settings</div>
+  <button class="s-item" onclick="window.location='index.html'"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>Site Settings</button>
+  <button class="s-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Privacy</button>
+
+  <div class="sidebar-foot">
+    <div class="foot-label">Free Plan Usage</div>
+    <div class="foot-bar"><div class="foot-fill"></div></div>
+    <div class="foot-text">2 of 3 free summaries used</div>
+    <span class="foot-upgrade" onclick="window.location='payments.html'">Upgrade to Pro →</span>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-title">Analytics Overview</div>
+    <div class="topbar-right">
+      <div class="date-picker">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Last 30 Days ▾
+      </div>
+      <button class="export-btn">
+        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export CSV
+      </button>
+      <div class="notif-btn"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><div class="notif-dot"></div></div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- KPI CARDS -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Total Visitors</span>
+          <div class="kpi-icon" style="background:rgba(59,130,246,.15)"><svg viewBox="0 0 24 24" style="stroke:#3B82F6"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg></div>
+        </div>
+        <div class="kpi-val">48,291</div>
+        <div class="kpi-change up"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>+23.4% vs last month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">PDFs Summarized</span>
+          <div class="kpi-icon" style="background:rgba(16,185,129,.15)"><svg viewBox="0 0 24 24" style="stroke:#10B981"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        </div>
+        <div class="kpi-val">127,843</div>
+        <div class="kpi-change up"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>+41.2% vs last month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Monthly Revenue</span>
+          <div class="kpi-icon" style="background:rgba(245,158,11,.15)"><svg viewBox="0 0 24 24" style="stroke:#F59E0B"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div>
+        </div>
+        <div class="kpi-val">$4,820</div>
+        <div class="kpi-change up"><svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>+18.7% vs last month</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-label">Churn Rate</span>
+          <div class="kpi-icon" style="background:rgba(239,68,68,.15)"><svg viewBox="0 0 24 24" style="stroke:#EF4444"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        </div>
+        <div class="kpi-val">2.3%</div>
+        <div class="kpi-change down"><svg viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>-0.8% vs last month</div>
+      </div>
+    </div>
+
+    <!-- CHARTS ROW -->
+    <div class="charts-row">
+      <div class="chart-card">
+        <div class="chart-header">
+          <span class="chart-title">Visitor & Revenue Trend</span>
+          <div class="chart-tabs">
+            <button class="chart-tab active">Visitors</button>
+            <button class="chart-tab">Revenue</button>
+            <button class="chart-tab">PDFs</button>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-header"><span class="chart-title">Traffic Sources</span></div>
+        <div class="donut-wrap">
+          <div class="donut-chart-wrap">
+            <canvas id="donutChart"></canvas>
+            <div class="donut-center">
+              <div class="donut-center-val">48K</div>
+              <div class="donut-center-label">Total</div>
+            </div>
+          </div>
+          <div class="donut-legend">
+            <div class="legend-item"><span class="legend-left"><span class="legend-dot" style="background:#3B82F6"></span>Organic Search</span><span class="legend-pct">42%</span></div>
+            <div class="legend-item"><span class="legend-left"><span class="legend-dot" style="background:#10B981"></span>Direct</span><span class="legend-pct">28%</span></div>
+            <div class="legend-item"><span class="legend-left"><span class="legend-dot" style="background:#F59E0B"></span>Social Media</span><span class="legend-pct">18%</span></div>
+            <div class="legend-item"><span class="legend-left"><span class="legend-dot" style="background:#EF4444"></span>Referral</span><span class="legend-pct">12%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTTOM GRID -->
+    <div class="bottom-grid">
+      <!-- TRAFFIC TABLE -->
+      <div class="table-card">
+        <div class="table-header">
+          <span class="table-title">Top Countries</span>
+          <span class="view-all">View all →</span>
+        </div>
+        <table>
+          <thead><tr><th>Country</th><th>Visitors</th><th>Share</th><th>Plan</th></tr></thead>
+          <tbody>
+            <tr><td><span class="country-flag">🇮🇳</span>India</td><td>19,231</td><td><div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></td><td><span class="status-badge status-free">Free</span></td></tr>
+            <tr><td><span class="country-flag">🇺🇸</span>United States</td><td>9,842</td><td><div class="progress-bar"><div class="progress-fill" style="width:51%"></div></div></td><td><span class="status-badge status-pro">Pro</span></td></tr>
+            <tr><td><span class="country-flag">🇬🇧</span>United Kingdom</td><td>4,291</td><td><div class="progress-bar"><div class="progress-fill" style="width:22%"></div></div></td><td><span class="status-badge status-pro">Pro</span></td></tr>
+            <tr><td><span class="country-flag">🇩🇪</span>Germany</td><td>3,102</td><td><div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div></td><td><span class="status-badge status-free">Free</span></td></tr>
+            <tr><td><span class="country-flag">🇦🇪</span>UAE</td><td>2,840</td><td><div class="progress-bar"><div class="progress-fill" style="width:15%"></div></div></td><td><span class="status-badge status-pro">Pro</span></td></tr>
+            <tr><td><span class="country-flag">🇨🇦</span>Canada</td><td>2,201</td><td><div class="progress-bar"><div class="progress-fill" style="width:11%"></div></div></td><td><span class="status-badge status-free">Free</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ACTIVITY -->
+      <div class="activity-card">
+        <div class="table-header">
+          <span class="table-title">Live Activity</span>
+          <span style="font-size:11px;color:var(--accent2);display:flex;align-items:center;gap:4px;"><span style="width:6px;height:6px;background:var(--accent2);border-radius:50%;display:inline-block;animation:pulse 1.5s infinite"></span>Live</span>
+        </div>
+        <div class="activity-list">
+          <div class="activity-item"><div class="act-icon" style="background:rgba(59,130,246,.15);font-size:13px;">🇮🇳</div><div class="act-body"><div class="act-title">User from Mumbai summarized a PDF</div><div class="act-time">Just now</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:rgba(16,185,129,.15);font-size:13px;">💎</div><div class="act-body"><div class="act-title">New Pro subscription — $9.99</div><div class="act-time">2 min ago</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:rgba(245,158,11,.15);font-size:13px;">🇺🇸</div><div class="act-body"><div class="act-title">User from New York signed up</div><div class="act-time">5 min ago</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:rgba(59,130,246,.15);font-size:13px;">🇬🇧</div><div class="act-body"><div class="act-title">40-page contract summarized</div><div class="act-time">8 min ago</div></div></div>
+          <div class="activity-item"><div class="act-icon" style="background:rgba(239,68,68,.15);font-size:13px;">📄</div><div class="act-body"><div class="act-title">API call — 1,200 tokens used</div><div class="act-time">11 min ago</div></div></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<style>
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+</style>
+
+<script>
+// Line Chart
+const lineCtx = document.getElementById('lineChart').getContext('2d');
+const labels = ['Apr 25','Apr 28','May 1','May 4','May 7','May 10','May 13','May 16','May 19','May 22','May 25'];
+const gradient = lineCtx.createLinearGradient(0,0,0,200);
+gradient.addColorStop(0,'rgba(59,130,246,0.3)');
+gradient.addColorStop(1,'rgba(59,130,246,0)');
+new Chart(lineCtx,{
+  type:'line',
+  data:{
+    labels,
+    datasets:[{
+      label:'Visitors',
+      data:[3200,3800,4100,3700,5200,5800,6100,5700,7200,8100,8900],
+      borderColor:'#3B82F6',backgroundColor:gradient,borderWidth:2,
+      pointBackgroundColor:'#3B82F6',pointRadius:3,tension:.4,fill:true
+    },{
+      label:'Revenue ($)',
+      data:[280,320,380,310,420,490,520,480,610,680,780],
+      borderColor:'#10B981',backgroundColor:'transparent',borderWidth:2,
+      pointBackgroundColor:'#10B981',pointRadius:3,tension:.4,fill:false
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,backgroundColor:'#1a2235',borderColor:'#1f2d45',borderWidth:1,titleColor:'#E2E8F0',bodyColor:'#94A3B8',padding:10}},
+    scales:{
+      x:{grid:{color:'rgba(31,45,69,0.5)'},ticks:{color:'#475569',font:{size:10}}},
+      y:{grid:{color:'rgba(31,45,69,0.5)'},ticks:{color:'#475569',font:{size:10}}}
+    }
+  }
+});
+
+// Donut Chart
+const donutCtx = document.getElementById('donutChart').getContext('2d');
+new Chart(donutCtx,{
+  type:'doughnut',
+  data:{
+    labels:['Organic','Direct','Social','Referral'],
+    datasets:[{data:[42,28,18,12],backgroundColor:['#3B82F6','#10B981','#F59E0B','#EF4444'],borderWidth:0,hoverOffset:4}]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,cutout:'72%',
+    plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2235',borderColor:'#1f2d45',borderWidth:1,titleColor:'#E2E8F0',bodyColor:'#94A3B8'}}
+  }
+});
+
+// Chart tab switching
+document.querySelectorAll('.chart-tab').forEach(tab=>{
+  tab.addEventListener('click',()=>{
+    document.querySelectorAll('.chart-tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

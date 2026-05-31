@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDFMagic AI — App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #0D0D0D; --ink-2: #444; --ink-3: #888;
+    --paper: #F8F8F6; --accent: #1A56DB; --accent-light: #EEF3FF;
+    --border: #E5E5E0; --card: #FFFFFF; --radius: 12px;
+    --sidebar: 240px;
+  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--paper); color: var(--ink); height: 100vh; display: flex; flex-direction: column; }
+
+  /* TOP BAR */
+  .topbar {
+    height: 56px; background: white; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; padding: 0 20px;
+    justify-content: space-between; flex-shrink: 0; z-index: 10;
+  }
+  .top-logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: var(--ink); display: flex; align-items: center; gap: 8px; text-decoration: none; }
+  .top-logo .dot { width: 26px; height: 26px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; }
+  .top-logo .dot svg { width: 14px; height: 14px; fill: white; }
+  .top-logo span { color: var(--accent); }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .plan-badge {
+    font-size: 11px; font-weight: 600; background: var(--accent-light);
+    color: var(--accent); padding: 3px 10px; border-radius: 20px;
+  }
+  .user-avatar {
+    width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: white; cursor: pointer;
+  }
+  .upgrade-btn {
+    background: var(--accent); color: white; border: none;
+    padding: 7px 14px; border-radius: 7px; font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: 'DM Sans', sans-serif;
+  }
+
+  /* LAYOUT */
+  .app-body { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar {
+    width: var(--sidebar); background: white; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; padding: 16px 12px; flex-shrink: 0;
+    overflow-y: auto;
+  }
+  .sidebar-section { margin-bottom: 24px; }
+  .sidebar-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-3); padding: 0 8px; margin-bottom: 6px; }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: 8px; cursor: pointer;
+    font-size: 14px; color: var(--ink-2); transition: all 0.15s;
+    border: none; background: none; width: 100%; text-align: left;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .sidebar-item:hover { background: var(--paper); color: var(--ink); }
+  .sidebar-item.active { background: var(--accent-light); color: var(--accent); font-weight: 500; }
+  .sidebar-item svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; flex-shrink: 0; }
+  .usage-box {
+    margin-top: auto; background: var(--paper); border-radius: 10px;
+    padding: 14px; border: 1px solid var(--border);
+  }
+  .usage-title { font-size: 12px; font-weight: 500; margin-bottom: 8px; }
+  .usage-bar-bg { background: var(--border); border-radius: 100px; height: 5px; margin-bottom: 6px; }
+  .usage-bar { background: var(--accent); height: 5px; border-radius: 100px; width: 33%; }
+  .usage-text { font-size: 11px; color: var(--ink-3); }
+  .upgrade-link { color: var(--accent); font-weight: 500; cursor: pointer; font-size: 11px; display: block; margin-top: 8px; }
+
+  /* MAIN */
+  .main { flex: 1; overflow-y: auto; padding: 28px 32px; }
+
+  /* SUMMARY TOOL */
+  .tool-header { margin-bottom: 24px; }
+  .tool-header h1 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; }
+  .tool-header p { font-size: 14px; color: var(--ink-3); margin-top: 4px; }
+
+  .tool-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+  /* UPLOAD PANEL */
+  .panel {
+    background: white; border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  .panel-header {
+    padding: 16px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 15px;
+  }
+  .panel-header svg { width: 16px; height: 16px; stroke: var(--accent); fill: none; stroke-width: 2; }
+  .panel-body { padding: 20px; }
+
+  .dropzone {
+    border: 2px dashed var(--border); border-radius: 10px;
+    padding: 32px 16px; text-align: center; cursor: pointer;
+    transition: all 0.2s; background: var(--paper);
+  }
+  .dropzone:hover, .dropzone.drag { border-color: var(--accent); background: var(--accent-light); }
+  .dz-icon {
+    width: 48px; height: 48px; background: var(--accent-light); border-radius: 10px;
+    display: flex; align-items: center; justify-content: center; margin: 0 auto 12px;
+  }
+  .dz-icon svg { width: 22px; height: 22px; stroke: var(--accent); fill: none; stroke-width: 2; }
+  .dropzone h3 { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .dropzone p { font-size: 12px; color: var(--ink-3); }
+  .dropzone span { color: var(--accent); }
+
+  .file-pill {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--paper); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; margin-bottom: 16px;
+  }
+  .file-pill svg { width: 20px; height: 20px; stroke: #E24B4A; fill: none; stroke-width: 2; flex-shrink: 0; }
+  .fp-name { font-size: 13px; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .fp-size { font-size: 11px; color: var(--ink-3); }
+  .fp-remove { background: none; border: none; cursor: pointer; color: var(--ink-3); font-size: 18px; line-height: 1; padding: 0 2px; }
+
+  .option-label { font-size: 12px; font-weight: 500; color: var(--ink-2); margin-bottom: 8px; margin-top: 16px; }
+  .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .type-btn {
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px 8px;
+    cursor: pointer; background: white; text-align: left;
+    transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+  }
+  .type-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+  .type-btn.selected { border: 2px solid var(--accent); background: var(--accent-light); }
+  .type-btn-name { font-size: 13px; font-weight: 500; color: var(--ink); display: block; }
+  .type-btn-desc { font-size: 11px; color: var(--ink-3); display: block; margin-top: 2px; }
+
+  .lang-select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 14px; background: var(--paper);
+    color: var(--ink); font-family: 'DM Sans', sans-serif; outline: none;
+  }
+  .lang-select:focus { border-color: var(--accent); }
+
+  .summarize-btn {
+    width: 100%; margin-top: 16px; padding: 12px;
+    background: var(--accent); color: white; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 500; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; display: flex;
+    align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;
+  }
+  .summarize-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .summarize-btn:hover:not(:disabled) { opacity: 0.88; }
+  .summarize-btn svg { width: 16px; height: 16px; stroke: white; fill: none; stroke-width: 2; }
+
+  /* RESULT PANEL */
+  .result-panel { background: white; border: 1px solid var(--border); border-radius: 16px; display: flex; flex-direction: column; min-height: 420px; }
+  .result-panel-header {
+    padding: 14px 20px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .result-panel-title { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+  .result-panel-title svg { width: 14px; height: 14px; stroke: var(--accent); fill: none; stroke-width: 2; }
+  .rp-actions { display: flex; gap: 6px; }
+  .rp-btn {
+    border: 1px solid var(--border); border-radius: 6px; padding: 5px 10px;
+    font-size: 12px; color: var(--ink-2); cursor: pointer; background: none;
+    font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 4px; transition: all 0.15s;
+  }
+  .rp-btn:hover { background: var(--paper); border-color: #aaa; }
+  .rp-btn svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+  .result-body {
+    flex: 1; padding: 20px; font-size: 14px; line-height: 1.8;
+    color: var(--ink-2); overflow-y: auto; white-space: pre-wrap;
+    min-height: 200px;
+  }
+  .result-empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    height: 100%; gap: 12px; color: var(--ink-3); font-size: 14px; padding: 40px;
+  }
+  .result-empty svg { width: 40px; height: 40px; stroke: var(--border); fill: none; stroke-width: 1.5; }
+
+  .stats-mini { display: flex; gap: 16px; padding: 12px 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .stat-mini { font-size: 12px; color: var(--ink-3); display: flex; align-items: center; gap: 5px; }
+  .stat-mini strong { color: var(--ink); font-weight: 500; }
+
+  .chat-row {
+    padding: 12px 20px; display: flex; gap: 8px; border-top: 1px solid var(--border);
+  }
+  .chat-input {
+    flex: 1; padding: 9px 12px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 13px; font-family: 'DM Sans', sans-serif;
+    background: var(--paper); color: var(--ink); outline: none;
+  }
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-btn {
+    background: var(--accent); color: white; border: none;
+    padding: 9px 14px; border-radius: 8px; font-size: 13px;
+    cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 6px;
+  }
+  .chat-btn svg { width: 14px; height: 14px; stroke: white; fill: none; stroke-width: 2; }
+
+  /* LOADING */
+  .loading-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 200px; gap: 16px; }
+  .spinner { width: 32px; height: 32px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { font-size: 13px; color: var(--ink-3); }
+
+  /* HISTORY */
+  .history-section { margin-top: 28px; }
+  .history-title { font-size: 15px; font-weight: 500; margin-bottom: 14px; }
+  .history-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .history-card {
+    background: white; border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px; cursor: pointer; transition: all 0.15s;
+  }
+  .history-card:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .hc-icon { width: 32px; height: 32px; background: #FEE2E2; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .hc-icon svg { width: 16px; height: 16px; stroke: #E24B4A; fill: none; stroke-width: 2; }
+  .hc-name { font-size: 13px; font-weight: 500; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .hc-meta { font-size: 11px; color: var(--ink-3); }
+
+  /* UPGRADE MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.5); align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 20px; padding: 40px;
+    max-width: 420px; width: 90%; text-align: center;
+  }
+  .modal h2 { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+  .modal p { font-size: 14px; color: var(--ink-2); margin-bottom: 24px; }
+  .modal-btns { display: flex; gap: 10px; flex-direction: column; }
+  .modal-btn-primary { background: var(--accent); color: white; border: none; padding: 13px; border-radius: 9px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+  .modal-btn-ghost { background: none; color: var(--ink-3); border: none; font-size: 13px; cursor: pointer; font-family: 'DM Sans', sans-serif; padding: 8px; }
+
+  #file-input { display: none; }
+
+  @media (max-width: 860px) {
+    .tool-grid { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <a href="index.html" class="top-logo">
+    <div class="dot">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+    </div>
+    PDF<span>Magic</span>
+  </a>
+  <div class="topbar-right">
+    <span class="plan-badge">Free Plan — 2/3 used today</span>
+    <button class="upgrade-btn" onclick="openModal()">Upgrade to Pro →</button>
+    <div class="user-avatar">U</div>
+  </div>
+</div>
+
+<div class="app-body">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Tools</div>
+      <button class="sidebar-item active" onclick="setPage('summarize', this)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        PDF Summarizer
+      </button>
+      <button class="sidebar-item" onclick="setPage('chat', this)">
+        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        Chat with PDF
+      </button>
+      <button class="sidebar-item" onclick="setPage('compress', this)">
+        <svg viewBox="0 0 24 24"><polyline points="4 14 10 14 10 20"/><polyline points="20 10 14 10 14 4"/><line x1="14" y1="10" x2="21" y2="3"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+        Compress PDF
+      </button>
+      <button class="sidebar-item" onclick="setPage('merge', this)">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+        Merge PDFs
+      </button>
+      <button class="sidebar-item" onclick="setPage('translate', this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+        Translate PDF
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Recent</div>
+      <button class="sidebar-item" style="font-size:12px;">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        research_paper.pdf
+      </button>
+      <button class="sidebar-item" style="font-size:12px;">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        contract_2026.pdf
+      </button>
+    </div>
+    <div class="usage-box">
+      <div class="usage-title">Daily Usage</div>
+      <div class="usage-bar-bg"><div class="usage-bar"></div></div>
+      <div class="usage-text">2 of 3 free summaries used</div>
+      <span class="upgrade-link" onclick="openModal()">Upgrade for unlimited →</span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main-area">
+    <div class="tool-header">
+      <h1>PDF Summarizer</h1>
+      <p>Upload a PDF and get an AI-powered summary in seconds</p>
+    </div>
+    <div class="tool-grid">
+      <!-- LEFT: Upload -->
+      <div class="panel">
+        <div class="panel-header">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Upload PDF
+        </div>
+        <div class="panel-body">
+          <div class="dropzone" id="drop-zone">
+            <div class="dz-icon">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <h3>Drop PDF here or <span>browse</span></h3>
+            <p>PDF files up to 10MB</p>
+          </div>
+          <input type="file" id="file-input" accept=".pdf">
+
+          <div id="file-pill" style="display:none;" class="file-pill">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span class="fp-name" id="fp-name">document.pdf</span>
+            <span class="fp-size" id="fp-size"></span>
+            <button class="fp-remove" onclick="resetFile()">×</button>
+          </div>
+
+          <div id="options-area" style="display:none;">
+            <div class="option-label">Summary style</div>
+            <div class="type-grid">
+              <button class="type-btn selected" onclick="selectType('brief', this)">
+                <span class="type-btn-name">Brief</span>
+                <span class="type-btn-desc">3–5 sentence overview</span>
+              </button>
+              <button class="type-btn" onclick="selectType('detailed', this)">
+                <span class="type-btn-name">Detailed</span>
+                <span class="type-btn-desc">Section by section</span>
+              </button>
+              <button class="type-btn" onclick="selectType('bullets', this)">
+                <span class="type-btn-name">Bullets</span>
+                <span class="type-btn-desc">Key points list</span>
+              </button>
+              <button class="type-btn" onclick="selectType('academic', this)">
+                <span class="type-btn-name">Academic</span>
+                <span class="type-btn-desc">Research format</span>
+              </button>
+            </div>
+
+            <div class="option-label">Output language</div>
+            <select class="lang-select" id="lang-select">
+              <option value="English">English</option>
+              <option value="Hindi">Hindi</option>
+              <option value="Gujarati">Gujarati</option>
+              <option value="Spanish">Spanish</option>
+              <option value="French">French</option>
+              <option value="Arabic">Arabic</option>
+              <option value="German">German</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Portuguese">Portuguese</option>
+              <option value="Russian">Russian</option>
+              <option value="Chinese">Chinese (Simplified)</option>
+              <option value="Korean">Korean</option>
+            </select>
+
+            <button class="summarize-btn" id="summarize-btn">
+              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+              Generate Summary
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Result -->
+      <div class="result-panel panel">
+        <div class="result-panel-header">
+          <span class="result-panel-title">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            AI Summary
+          </span>
+          <div class="rp-actions">
+            <button class="rp-btn" id="copy-btn" onclick="copySummary()">
+              <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copy
+            </button>
+            <button class="rp-btn" onclick="downloadSummary()">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Save
+            </button>
+          </div>
+        </div>
+
+        <div id="loading-wrap" style="display:none;" class="loading-wrap">
+          <div class="spinner"></div>
+          <div class="loading-text">Reading your PDF and generating summary...</div>
+        </div>
+
+        <div id="result-body" class="result-body">
+          <div class="result-empty">
+            <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Upload a PDF to see your summary here
+          </div>
+        </div>
+
+        <div id="stats-mini" style="display:none;" class="stats-mini">
+          <span class="stat-mini">Words: <strong id="stat-words">—</strong></span>
+          <span class="stat-mini">Reading time: <strong id="stat-time">—</strong></span>
+          <span class="stat-mini">Language: <strong id="stat-lang">—</strong></span>
+        </div>
+
+        <div class="chat-row">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Ask a question about this PDF..." />
+          <button class="chat-btn" onclick="askQuestion()">
+            <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            Ask
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="history-section">
+      <div class="history-title">Recent summaries</div>
+      <div class="history-grid">
+        <div class="history-card">
+          <div class="hc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="hc-name">Research_Paper_2026.pdf</div>
+          <div class="hc-meta">Brief · English · 2 hours ago</div>
+        </div>
+        <div class="history-card">
+          <div class="hc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="hc-name">Contract_Final.pdf</div>
+          <div class="hc-meta">Detailed · Hindi · Yesterday</div>
+        </div>
+        <div class="history-card">
+          <div class="hc-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          <div class="hc-name">Annual_Report_Q4.pdf</div>
+          <div class="hc-meta">Bullets · English · 2 days ago</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- UPGRADE MODAL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <div style="font-size:40px;margin-bottom:12px;">⚡</div>
+    <h2>Upgrade to Pro</h2>
+    <p>Get unlimited summaries, larger files, no ads, and priority AI processing for just <strong>$9.99/month</strong>.</p>
+    <div class="modal-btns">
+      <button class="modal-btn-primary">Upgrade Now — $9.99/mo</button>
+      <button class="modal-btn-ghost" onclick="closeModal()">Maybe later</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let pdfBase64 = null, summaryText = '', currentType = 'brief';
+
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file-input');
+
+dropZone.addEventListener('click', () => fileInput.click());
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('drag'); handleFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+function handleFile(file) {
+  if (!file || file.type !== 'application/pdf') return;
+  if (file.size > 10 * 1024 * 1024) { alert('File too large. Max 10MB.'); return; }
+  document.getElementById('fp-name').textContent = file.name;
+  document.getElementById('fp-size').textContent = (file.size / 1024).toFixed(0) + ' KB';
+  document.getElementById('file-pill').style.display = 'flex';
+  document.getElementById('drop-zone').style.display = 'none';
+  document.getElementById('options-area').style.display = 'block';
+  const reader = new FileReader();
+  reader.onload = e => { pdfBase64 = e.target.result.split(',')[1]; };
+  reader.readAsDataURL(file);
+}
+
+function resetFile() {
+  pdfBase64 = null;
+  document.getElementById('file-pill').style.display = 'none';
+  document.getElementById('drop-zone').style.display = 'block';
+  document.getElementById('options-area').style.display = 'none';
+  document.getElementById('result-body').innerHTML = '<div class="result-empty"><svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:var(--border);fill:none;stroke-width:1.5;"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>Upload a PDF to see your summary here</div>';
+  document.getElementById('stats-mini').style.display = 'none';
+  fileInput.value = '';
+}
+
+function selectType(type, btn) {
+  currentType = type;
+  document.querySelectorAll('.type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+}
+
+const prompts = {
+  brief: 'Summarize this PDF in 3-5 clear sentences. Highlight the main topic, key arguments, and most important conclusion.',
+  detailed: 'Provide a detailed section-by-section summary. For each major section, give 2-3 sentences capturing key points. End with an overall conclusion.',
+  bullets: 'Extract the key points from this PDF as bullet points. Group them under 3-4 topic headers. Each bullet should be concise.',
+  academic: 'Summarize this PDF in academic format: 1) Objective 2) Methodology 3) Key Findings 4) Conclusions & Implications.'
+};
+
+document.getElementById('summarize-btn').addEventListener('click', async () => {
+  if (!pdfBase64) return;
+  const lang = document.getElementById('lang-select').value;
+  const langNote = lang !== 'English' ? ` Respond in ${lang}.` : '';
+  document.getElementById('loading-wrap').style.display = 'flex';
+  document.getElementById('result-body').innerHTML = '';
+  document.getElementById('stats-mini').style.display = 'none';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role: 'user', content: [
+          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
+          { type: 'text', text: prompts[currentType] + langNote }
+        ]}]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    summaryText = data.content.map(b => b.text || '').join('');
+    document.getElementById('loading-wrap').style.display = 'none';
+    document.getElementById('result-body').textContent = summaryText;
+    const wc = summaryText.trim().split(/\s+/).length;
+    document.getElementById('stat-words').textContent = wc;
+    document.getElementById('stat-time').textContent = Math.max(1, Math.round(wc / 200)) + ' min';
+    document.getElementById('stat-lang').textContent = lang;
+    document.getElementById('stats-mini').style.display = 'flex';
+  } catch (err) {
+    document.getElementById('loading-wrap').style.display = 'none';
+    document.getElementById('result-body').textContent = 'Error: ' + err.message;
+  }
+});
+
+async function askQuestion() {
+  const q = document.getElementById('chat-input').value.trim();
+  if (!q || !pdfBase64) return;
+  document.getElementById('chat-input').value = '';
+  document.getElementById('loading-wrap').style.display = 'flex';
+  document.getElementById('result-body').innerHTML = '';
+  document.getElementById('stats-mini').style.display = 'none';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514', max_tokens: 1000,
+        messages: [{ role: 'user', content: [
+          { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: pdfBase64 } },
+          { type: 'text', text: 'Answer this question based on the PDF: ' + q }
+        ]}]
+      })
+    });
+    const data = await res.json();
+    if (data.error) throw new Error(data.error.message);
+    summaryText = data.content.map(b => b.text || '').join('');
+    document.getElementById('loading-wrap').style.display = 'none';
+    document.getElementById('result-body').textContent = summaryText;
+  } catch (err) {
+    document.getElementById('loading-wrap').style.display = 'none';
+    document.getElementById('result-body').textContent = 'Error: ' + err.message;
+  }
+}
+document.getElementById('chat-input').addEventListener('keydown', e => { if (e.key === 'Enter') askQuestion(); });
+
+function copySummary() {
+  if (!summaryText) return;
+  navigator.clipboard.writeText(summaryText);
+  const btn = document.getElementById('copy-btn');
+  btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;"><polyline points="20 6 9 17 4 12"/></svg> Copied!';
+  setTimeout(() => { btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg> Copy'; }, 2000);
+}
+
+function downloadSummary() {
+  if (!summaryText) return;
+  const blob = new Blob([summaryText], { type: 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'summary.txt'; a.click();
+}
+
+function setPage(page, btn) {
+  document.querySelectorAll('.sidebar-item').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function openModal() { document.getElementById('modal').classList.add('open'); }
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target === document.getElementById('modal')) closeModal(); });
+</script>
+</body>
+</html>

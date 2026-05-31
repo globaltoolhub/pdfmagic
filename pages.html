@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDFMagic — About Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--ink:#0D0D0D;--ink2:#444;--ink3:#888;--paper:#F8F8F6;--accent:#1A56DB;--al:#EEF3FF;--border:#E5E5E0;--radius:12px;}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);}
+
+/* NAV */
+nav{background:white;border-bottom:1px solid var(--border);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo .dot{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.nav-logo .dot svg{width:14px;height:14px;fill:white;}
+.nav-logo span{color:var(--accent);}
+.nav-links{display:flex;align-items:center;gap:20px;}
+.nav-links a{font-size:14px;color:var(--ink3);text-decoration:none;transition:color .2s;}
+.nav-links a:hover{color:var(--accent);}
+.nav-cta{background:var(--ink);color:white!important;padding:8px 16px;border-radius:8px;font-weight:500!important;}
+.nav-cta:hover{background:var(--accent)!important;}
+.hamburger{display:none;flex-direction:column;gap:5px;background:none;border:none;cursor:pointer;padding:4px;}
+.hamburger span{width:22px;height:2px;background:var(--ink);border-radius:2px;display:block;}
+.mobile-menu{display:none;background:white;border-bottom:1px solid var(--border);padding:16px 5vw;flex-direction:column;gap:4px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{font-size:15px;color:var(--ink2);text-decoration:none;padding:10px 0;border-bottom:1px solid var(--border);}
+.mobile-menu a:last-child{border-bottom:none;}
+
+/* SHARED */
+.page{display:none;}
+.page.active{display:block;}
+.section{padding:80px 5vw;}
+.container{max-width:900px;margin:0 auto;}
+.narrow{max-width:700px;margin:0 auto;}
+.page-hero{background:white;border-bottom:1px solid var(--border);padding:60px 5vw;text-align:center;}
+.page-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+.page-title{font-family:'Syne',sans-serif;font-size:clamp(30px,5vw,48px);font-weight:800;margin-bottom:12px;}
+.page-sub{font-size:16px;color:var(--ink2);max-width:500px;margin:0 auto;font-weight:300;}
+
+/* ABOUT */
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;padding:80px 5vw;}
+.about-img{background:linear-gradient(135deg,#1A56DB,#1344b8);border-radius:20px;height:360px;display:flex;align-items:center;justify-content:center;font-size:80px;}
+.about-content h2{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;margin-bottom:16px;line-height:1.2;}
+.about-content p{font-size:16px;color:var(--ink2);line-height:1.8;margin-bottom:16px;font-weight:300;}
+.team-section{background:white;padding:80px 5vw;border-top:1px solid var(--border);}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:24px;margin-top:40px;}
+.team-card{text-align:center;}
+.team-av{width:80px;height:80px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;color:white;}
+.team-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:4px;}
+.team-role{font-size:13px;color:var(--ink3);}
+.team-bio{font-size:13px;color:var(--ink2);margin-top:8px;line-height:1.5;}
+.values-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px;margin-top:40px;}
+.value-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+.value-icon{font-size:28px;margin-bottom:12px;}
+.value-card h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:8px;}
+.value-card p{font-size:14px;color:var(--ink2);line-height:1.6;}
+.stats-banner{background:linear-gradient(135deg,var(--accent),#1344b8);padding:60px 5vw;display:grid;grid-template-columns:repeat(4,1fr);gap:30px;text-align:center;}
+.sb-num{font-family:'Syne',sans-serif;font-size:44px;font-weight:800;color:white;line-height:1;}
+.sb-label{font-size:13px;color:rgba(255,255,255,.7);margin-top:6px;}
+
+/* CONTACT */
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:80px 5vw;max-width:1000px;margin:0 auto;}
+.contact-info h2{font-family:'Syne',sans-serif;font-size:26px;font-weight:700;margin-bottom:12px;}
+.contact-info p{font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:28px;}
+.contact-method{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px;}
+.cm-icon{width:40px;height:40px;background:var(--al);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.cm-icon svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:2;}
+.cm-title{font-size:14px;font-weight:500;margin-bottom:3px;}
+.cm-val{font-size:13px;color:var(--ink3);}
+.contact-form-card{background:white;border:1px solid var(--border);border-radius:18px;padding:32px;}
+.contact-form-card h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:20px;}
+.form-group{margin-bottom:16px;}
+.form-label{font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;}
+.form-input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;background:white;color:var(--ink);outline:none;transition:border .2s;}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.07);}
+textarea.form-input{height:110px;resize:vertical;}
+.form-select{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;background:white;color:var(--ink);outline:none;transition:border .2s;appearance:none;}
+.submit-btn{width:100%;padding:13px;background:var(--accent);color:white;border:none;border-radius:9px;font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{background:#1344b8;transform:translateY(-1px);}
+.submit-btn .spinner{width:16px;height:16px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;display:none;}
+.submit-btn.loading .btn-text{display:none;}
+.submit-btn.loading .spinner{display:block;}
+.contact-success{text-align:center;padding:20px 0;display:none;}
+.contact-success .big{font-size:48px;margin-bottom:14px;}
+.contact-success h3{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin-bottom:8px;}
+.contact-success p{font-size:14px;color:var(--ink2);}
+.faq-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:40px;}
+.faq-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:20px;}
+.faq-card h4{font-size:14px;font-weight:600;margin-bottom:8px;}
+.faq-card p{font-size:13px;color:var(--ink2);line-height:1.6;}
+
+/* LEGAL */
+.legal-body{max-width:760px;margin:0 auto;padding:60px 5vw;}
+.legal-body h1{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;margin-bottom:8px;}
+.legal-meta{font-size:13px;color:var(--ink3);margin-bottom:40px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.legal-body h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;margin:36px 0 12px;}
+.legal-body h3{font-size:16px;font-weight:600;margin:20px 0 8px;}
+.legal-body p{font-size:15px;color:var(--ink2);line-height:1.8;margin-bottom:16px;}
+.legal-body ul{margin:0 0 16px 20px;}
+.legal-body li{font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:6px;}
+.legal-body a{color:var(--accent);}
+.legal-toc{background:var(--al);border:1px solid #c7d9ff;border-radius:var(--radius);padding:20px 24px;margin-bottom:36px;}
+.legal-toc h4{font-size:13px;font-weight:600;margin-bottom:10px;color:var(--accent);}
+.legal-toc ol{padding-left:18px;}
+.legal-toc li{font-size:13px;color:var(--accent);margin-bottom:4px;cursor:pointer;}
+.legal-toc li:hover{text-decoration:underline;}
+
+/* 404 */
+.not-found{text-align:center;padding:120px 5vw;}
+.nf-code{font-family:'Syne',sans-serif;font-size:120px;font-weight:800;color:var(--border);line-height:1;}
+.nf-emoji{font-size:60px;margin:20px 0;}
+.not-found h2{font-family:'Syne',sans-serif;font-size:32px;font-weight:800;margin-bottom:12px;}
+.not-found p{font-size:16px;color:var(--ink2);max-width:440px;margin:0 auto 28px;font-weight:300;}
+.nf-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+.btn-primary{background:var(--accent);color:white;padding:12px 28px;border-radius:9px;font-size:15px;font-weight:500;text-decoration:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-primary:hover{background:#1344b8;transform:translateY(-1px);}
+.btn-secondary{background:white;color:var(--ink);padding:12px 28px;border-radius:9px;font-size:15px;border:1.5px solid var(--border);text-decoration:none;transition:all .2s;}
+.btn-secondary:hover{border-color:var(--accent);color:var(--accent);}
+.nf-links{margin-top:40px;display:flex;gap:20px;justify-content:center;flex-wrap:wrap;}
+.nf-links a{font-size:14px;color:var(--accent);text-decoration:none;}
+.nf-links a:hover{text-decoration:underline;}
+
+/* COOKIE BANNER */
+.cookie-banner{position:fixed;bottom:0;left:0;right:0;z-index:999;background:var(--ink);padding:16px 5vw;display:flex;align-items:center;gap:16px;flex-wrap:wrap;transform:translateY(100%);transition:transform .4s ease;border-top:3px solid var(--accent);}
+.cookie-banner.show{transform:translateY(0);}
+.cookie-text{flex:1;font-size:13px;color:#aaa;line-height:1.5;}
+.cookie-text a{color:var(--accent);}
+.cookie-btns{display:flex;gap:8px;flex-shrink:0;}
+.cookie-accept{background:var(--accent);color:white;border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.cookie-decline{background:rgba(255,255,255,.1);color:#aaa;border:1px solid rgba(255,255,255,.15);padding:9px 16px;border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* BACK TO TOP */
+.back-top{position:fixed;bottom:80px;right:24px;width:40px;height:40px;background:var(--accent);color:white;border:none;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .3s,transform .3s;z-index:90;box-shadow:0 4px 12px rgba(26,86,219,.3);}
+.back-top.show{opacity:1;}
+.back-top:hover{transform:translateY(-2px);}
+.back-top svg{width:16px;height:16px;stroke:white;fill:none;stroke-width:2.5;}
+
+/* FOOTER */
+footer{background:var(--ink);padding:60px 5vw 32px;}
+.footer-grid{display:grid;grid-template-columns:2fr repeat(3,1fr);gap:40px;margin-bottom:48px;}
+.footer-brand{}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:white;margin-bottom:10px;}
+.footer-logo span{color:#7CA3FF;}
+.footer-desc{font-size:13px;color:#555;line-height:1.7;max-width:220px;margin-bottom:20px;}
+.footer-social{display:flex;gap:10px;}
+.social-icon{width:34px;height:34px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;}
+.social-icon:hover{background:var(--accent);border-color:var(--accent);}
+.social-icon svg{width:15px;height:15px;stroke:#666;fill:none;stroke-width:2;}
+.social-icon:hover svg{stroke:white;}
+.footer-col h4{font-size:12px;font-weight:600;color:white;margin-bottom:16px;letter-spacing:.5px;text-transform:uppercase;}
+.footer-col a{display:block;font-size:13px;color:#555;text-decoration:none;margin-bottom:10px;transition:color .2s;}
+.footer-col a:hover{color:white;}
+.footer-bottom{border-top:1px solid #1a1a1a;padding-top:24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.footer-copy{font-size:12px;color:#333;}
+.footer-legal{display:flex;gap:16px;}
+.footer-legal a{font-size:12px;color:#333;text-decoration:none;}
+.footer-legal a:hover{color:white;}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.about-grid,.contact-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}.stats-banner{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.footer-grid{grid-template-columns:1fr}.faq-row{grid-template-columns:1fr}.nav-links{display:none}.hamburger{display:flex}}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="dot"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    PDF<span>Magic</span>
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="seo-blog.html">Blog</a>
+    <a href="payments.html">Pricing</a>
+    <a href="#" onclick="showPage('about');return false;">About</a>
+    <a href="#" onclick="showPage('contact');return false;">Contact</a>
+    <a href="login.html" class="nav-cta">Sign Up Free</a>
+  </div>
+  <button class="hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+<div class="mobile-menu" id="mobile-menu">
+  <a href="index.html">Home</a>
+  <a href="app.html">Try Free</a>
+  <a href="seo-blog.html">Blog</a>
+  <a href="payments.html">Pricing</a>
+  <a href="#" onclick="showPage('about');closeMobile();return false;">About</a>
+  <a href="#" onclick="showPage('contact');closeMobile();return false;">Contact</a>
+  <a href="#" onclick="showPage('privacy');closeMobile();return false;">Privacy Policy</a>
+  <a href="#" onclick="showPage('terms');closeMobile();return false;">Terms of Service</a>
+  <a href="login.html">Sign In / Sign Up</a>
+</div>
+
+<!-- ══════════════ ABOUT PAGE ══════════════ -->
+<div class="page active" id="page-about">
+  <div class="page-hero">
+    <div class="page-label">About PDFMagic</div>
+    <h1 class="page-title">Built to make reading faster<br>for everyone on Earth</h1>
+    <p class="page-sub">We believe no one should spend hours reading documents when AI can do it in seconds.</p>
+  </div>
+
+  <div class="about-grid container">
+    <div class="about-img">🤖</div>
+    <div class="about-content">
+      <h2>Our Story</h2>
+      <p>PDFMagic was founded in 2025 by a team of researchers and engineers who were frustrated by how much time they spent reading long documents — research papers, legal contracts, annual reports.</p>
+      <p>We built the first version in a weekend: a simple tool that uploaded a PDF and returned a summary. Within a month, 10,000 people were using it. Within three months, 50,000.</p>
+      <p>Today, PDFMagic is the world's fastest-growing AI PDF summarization platform, trusted by students, researchers, lawyers, and business professionals in 120+ countries.</p>
+      <p>Our mission is simple: <strong>help people understand more, faster, in any language.</strong></p>
+    </div>
+  </div>
+
+  <div class="stats-banner">
+    <div><div class="sb-num">50K+</div><div class="sb-label">Active Users</div></div>
+    <div><div class="sb-num">2M+</div><div class="sb-label">PDFs Summarized</div></div>
+    <div><div class="sb-num">120+</div><div class="sb-label">Countries</div></div>
+    <div><div class="sb-num">24+</div><div class="sb-label">Languages</div></div>
+  </div>
+
+  <div class="section" style="background:white;border-top:1px solid var(--border);">
+    <div class="container">
+      <div class="page-label">Our Values</div>
+      <div class="section-title" style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;margin-bottom:0;">What we believe in</div>
+      <div class="values-grid">
+        <div class="value-card"><div class="value-icon">🔒</div><h3>Privacy First</h3><p>Your documents are yours. We delete files after 1 hour and never use your data for AI training. Ever.</p></div>
+        <div class="value-card"><div class="value-icon">⚡</div><h3>Speed Matters</h3><p>Every second of waiting is time wasted. We obsess over making our AI as fast as humanly possible.</p></div>
+        <div class="value-card"><div class="value-icon">🌏</div><h3>Accessible to All</h3><p>Knowledge should have no language barrier. That's why we support 24+ languages including Hindi, Gujarati, and more.</p></div>
+        <div class="value-card"><div class="value-icon">🎯</div><h3>Accuracy Above All</h3><p>We use the best AI models available and continuously test accuracy. We'd rather say less and be right.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="team-section">
+    <div class="container">
+      <div class="page-label">Our Team</div>
+      <div class="section-title" style="font-family:'Syne',sans-serif;font-size:28px;font-weight:800;">The people behind PDFMagic</div>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-av" style="background:linear-gradient(135deg,#1A56DB,#7C3AED)">A</div><div class="team-name">Arjun Mehta</div><div class="team-role">CEO & Co-Founder</div><div class="team-bio">Ex-Google engineer. Built AI tools for 8 years. IIT Bombay alumnus.</div></div>
+        <div class="team-card"><div class="team-av" style="background:linear-gradient(135deg,#16A34A,#0D9488)">P</div><div class="team-name">Priya Sharma</div><div class="team-role">CTO & Co-Founder</div><div class="team-bio">AI/ML researcher. PhD from Stanford. Formerly at OpenAI and DeepMind.</div></div>
+        <div class="team-card"><div class="team-av" style="background:linear-gradient(135deg,#D97706,#EF4444)">R</div><div class="team-name">Rahul Patel</div><div class="team-role">Head of Design</div><div class="team-bio">Product designer with 10 years experience. Previously at Figma and Notion.</div></div>
+        <div class="team-card"><div class="team-av" style="background:linear-gradient(135deg,#7C3AED,#EC4899)">S</div><div class="team-name">Sneha Iyer</div><div class="team-role">Head of Growth</div><div class="team-bio">Growth expert who scaled two startups to $10M ARR. IIM Ahmedabad.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ CONTACT PAGE ══════════════ -->
+<div class="page" id="page-contact">
+  <div class="page-hero">
+    <div class="page-label">Contact Us</div>
+    <h1 class="page-title">We'd love to hear from you</h1>
+    <p class="page-sub">Have a question, feedback, or partnership idea? We respond within 24 hours.</p>
+  </div>
+
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h2>Get in touch</h2>
+      <p>Our team is based in Bangalore, India and we support users worldwide. Whether you need help, have feedback, or want to explore a partnership — we're here.</p>
+      <div class="contact-method">
+        <div class="cm-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+        <div><div class="cm-title">Email Support</div><div class="cm-val">support@pdfmagic.io</div></div>
+      </div>
+      <div class="contact-method">
+        <div class="cm-icon"><svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+        <div><div class="cm-title">Office</div><div class="cm-val">HSR Layout, Bangalore, India 560102</div></div>
+      </div>
+      <div class="contact-method">
+        <div class="cm-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div><div class="cm-title">Response Time</div><div class="cm-val">Within 24 hours on business days</div></div>
+      </div>
+
+      <div class="faq-row">
+        <div class="faq-card"><h4>🔒 Privacy questions?</h4><p>Read our <a href="#" onclick="showPage('privacy');return false;" style="color:var(--accent)">Privacy Policy</a> or email privacy@pdfmagic.io</p></div>
+        <div class="faq-card"><h4>💳 Billing issues?</h4><p>Check <a href="payments.html" style="color:var(--accent)">Pricing page</a> or email billing@pdfmagic.io</p></div>
+        <div class="faq-card"><h4>🤝 Partnerships?</h4><p>Interested in integrations or partnerships? Email partners@pdfmagic.io</p></div>
+        <div class="faq-card"><h4>🐛 Found a bug?</h4><p>Report it at bugs@pdfmagic.io — we'll fix it within 48 hours.</p></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="contact-form-card">
+        <h3>Send us a message</h3>
+        <div id="contact-form">
+          <div class="form-group">
+            <label class="form-label">Your name</label>
+            <input type="text" class="form-input" id="cf-name" placeholder="Rahul Sharma">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email address</label>
+            <input type="email" class="form-input" id="cf-email" placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Subject</label>
+            <select class="form-select form-input" id="cf-subject">
+              <option>General Question</option>
+              <option>Technical Support</option>
+              <option>Billing & Payments</option>
+              <option>Feature Request</option>
+              <option>Partnership / Business</option>
+              <option>Bug Report</option>
+              <option>Privacy Concern</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-input" id="cf-message" placeholder="Tell us how we can help..."></textarea>
+          </div>
+          <button class="submit-btn" id="cf-submit" onclick="submitContact()">
+            <span class="btn-text">Send Message →</span>
+            <div class="spinner"></div>
+          </button>
+        </div>
+        <div class="contact-success" id="contact-success">
+          <div class="big">✅</div>
+          <h3>Message sent!</h3>
+          <p>Thanks for reaching out. We'll reply to your email within 24 hours.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ PRIVACY POLICY ══════════════ -->
+<div class="page" id="page-privacy">
+  <div class="legal-body">
+    <h1>Privacy Policy</h1>
+    <div class="legal-meta">Last updated: May 26, 2026 · Effective: May 26, 2026</div>
+
+    <div class="legal-toc">
+      <h4>Table of Contents</h4>
+      <ol>
+        <li>What Information We Collect</li>
+        <li>How We Use Your Information</li>
+        <li>Data Storage & Security</li>
+        <li>Your Files & Documents</li>
+        <li>Cookies & Tracking</li>
+        <li>Third-Party Services</li>
+        <li>Your Rights (GDPR & CCPA)</li>
+        <li>Contact Us</li>
+      </ol>
+    </div>
+
+    <p>PDFMagic AI ("we", "our", "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and protect your information when you use PDFMagic.io and our related services.</p>
+
+    <h2>1. What Information We Collect</h2>
+    <h3>Account Information</h3>
+    <p>When you create an account, we collect your name, email address, and password (stored as a secure hash). We never store plain-text passwords.</p>
+    <h3>Usage Data</h3>
+    <p>We collect information about how you use our service, including pages visited, features used, summary types selected, and general performance metrics. This data is anonymized and used to improve the service.</p>
+    <h3>Payment Information</h3>
+    <p>All payments are processed by Stripe. We never see or store your full credit card number. We receive only a payment confirmation token from Stripe.</p>
+
+    <h2>2. How We Use Your Information</h2>
+    <ul>
+      <li>To provide and improve the PDFMagic service</li>
+      <li>To send important account and billing notifications</li>
+      <li>To respond to your support requests</li>
+      <li>To analyze usage patterns and improve performance</li>
+      <li>To prevent fraud and ensure security</li>
+    </ul>
+    <p>We do not sell your personal information to third parties. We do not use your data for advertising targeting. We do not share your data with data brokers.</p>
+
+    <h2>3. Data Storage & Security</h2>
+    <p>Your account data is stored on secure servers in India and the European Union, encrypted at rest using AES-256 encryption. All data transfers are protected by TLS 1.3 encryption. We conduct regular security audits and penetration testing.</p>
+
+    <h2>4. Your Files & Documents</h2>
+    <p><strong>This is our most important privacy commitment:</strong></p>
+    <ul>
+      <li>PDF files you upload are processed in memory and automatically deleted within 1 hour</li>
+      <li>Your documents are never stored permanently on our servers</li>
+      <li>Your documents are never used to train AI models</li>
+      <li>No human employee reads your uploaded documents</li>
+      <li>Document content is transmitted to the AI provider (Anthropic) only for processing and is subject to Anthropic's privacy policy</li>
+    </ul>
+
+    <h2>5. Cookies & Tracking</h2>
+    <p>We use cookies for authentication (keeping you logged in), preferences (your chosen language and settings), and analytics (understanding how the site is used via anonymized data). We do not use advertising cookies or third-party tracking cookies.</p>
+
+    <h2>6. Third-Party Services</h2>
+    <p>We use the following third-party services: Anthropic (AI processing), Stripe (payment processing), Vercel (hosting), and Google Analytics (anonymized traffic analytics). Each of these services has their own privacy policy.</p>
+
+    <h2>7. Your Rights (GDPR & CCPA)</h2>
+    <p>You have the right to access, correct, export, or delete your personal data at any time. To exercise these rights, email privacy@pdfmagic.io. We will respond within 30 days. You can also delete your account directly from Settings → Account → Delete Account.</p>
+
+    <h2>8. Contact Us</h2>
+    <p>For privacy questions, contact our Data Protection Officer at privacy@pdfmagic.io or write to: PDFMagic AI, HSR Layout, Bangalore, India 560102.</p>
+  </div>
+</div>
+
+<!-- ══════════════ TERMS OF SERVICE ══════════════ -->
+<div class="page" id="page-terms">
+  <div class="legal-body">
+    <h1>Terms of Service</h1>
+    <div class="legal-meta">Last updated: May 26, 2026 · These terms govern your use of PDFMagic.io</div>
+
+    <p>By using PDFMagic AI ("Service"), you agree to these Terms of Service. Please read them carefully. If you do not agree, do not use the Service.</p>
+
+    <h2>1. Acceptance of Terms</h2>
+    <p>By creating an account or using PDFMagic, you confirm that you are at least 13 years old and agree to be bound by these Terms and our Privacy Policy.</p>
+
+    <h2>2. Your Account</h2>
+    <p>You are responsible for maintaining the security of your account credentials. You must not share your account with others or allow unauthorized access. Notify us immediately if you suspect unauthorized use of your account.</p>
+
+    <h2>3. Permitted Use</h2>
+    <p>You may use PDFMagic to summarize, analyze, and interact with PDF documents that you have the legal right to process. You must not:</p>
+    <ul>
+      <li>Upload documents you do not have rights to process</li>
+      <li>Use the service for illegal purposes</li>
+      <li>Attempt to reverse-engineer or scrape the service</li>
+      <li>Upload malicious files or content designed to harm others</li>
+      <li>Misrepresent AI-generated summaries as original human analysis</li>
+    </ul>
+
+    <h2>4. Subscriptions & Billing</h2>
+    <p>Free plan users receive 3 PDF summaries per day at no charge. Pro and Business subscriptions are billed monthly or annually as selected. Subscriptions automatically renew unless cancelled. You can cancel anytime from your account settings. Cancellation takes effect at the end of the current billing period. Refunds are provided within 7 days of initial purchase if requested.</p>
+
+    <h2>5. Intellectual Property</h2>
+    <p>PDFMagic and its original content, features, and functionality are owned by PDFMagic AI and protected by international copyright laws. AI-generated summaries of your documents belong to you. You retain full ownership of your uploaded documents at all times.</p>
+
+    <h2>6. Disclaimer of Warranties</h2>
+    <p>PDFMagic is provided "as is" without warranties of any kind. AI summaries may contain errors and should not be relied upon as a substitute for professional advice — including legal, medical, financial, or academic advice. Always verify important information against original sources.</p>
+
+    <h2>7. Limitation of Liability</h2>
+    <p>PDFMagic's total liability for any claim arising from use of the service is limited to the amount you paid us in the 3 months preceding the claim. We are not liable for indirect, incidental, or consequential damages.</p>
+
+    <h2>8. Governing Law</h2>
+    <p>These Terms are governed by the laws of India. Any disputes shall be subject to the exclusive jurisdiction of the courts in Bangalore, Karnataka, India.</p>
+
+    <h2>9. Contact</h2>
+    <p>For legal inquiries: legal@pdfmagic.io · PDFMagic AI, HSR Layout, Bangalore, India 560102</p>
+  </div>
+</div>
+
+<!-- ══════════════ 404 PAGE ══════════════ -->
+<div class="page" id="page-404">
+  <div class="not-found">
+    <div class="nf-code">404</div>
+    <div class="nf-emoji">🤔</div>
+    <h2>Page not found</h2>
+    <p>Looks like this page doesn't exist — or maybe it moved. Let's get you back on track.</p>
+    <div class="nf-btns">
+      <a href="index.html" class="btn-primary">Go to Homepage →</a>
+      <a href="app.html" class="btn-secondary">Try the Tool</a>
+    </div>
+    <div class="nf-links">
+      <a href="seo-blog.html">Blog</a>
+      <a href="payments.html">Pricing</a>
+      <a href="#" onclick="showPage('contact');return false;">Contact Support</a>
+      <a href="#" onclick="showPage('privacy');return false;">Privacy Policy</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <div class="footer-logo">PDF<span>Magic</span> AI</div>
+      <p class="footer-desc">The fastest AI PDF summarizer. Trusted by 50,000+ users in 120 countries. Powered by Claude AI.</p>
+      <div class="footer-social">
+        <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg></div>
+        <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg></div>
+        <div class="social-icon"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg></div>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Product</h4>
+      <a href="app.html">PDF Summarizer</a>
+      <a href="payments.html">Pricing</a>
+      <a href="analytics.html">Analytics</a>
+      <a href="#">API Docs</a>
+      <a href="#">Changelog</a>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <a href="#" onclick="showPage('about');return false;">About Us</a>
+      <a href="seo-blog.html">Blog</a>
+      <a href="#" onclick="showPage('contact');return false;">Contact</a>
+      <a href="#">Careers</a>
+      <a href="#">Press</a>
+    </div>
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <a href="#" onclick="showPage('privacy');return false;">Privacy Policy</a>
+      <a href="#" onclick="showPage('terms');return false;">Terms of Service</a>
+      <a href="#">Cookie Policy</a>
+      <a href="#">GDPR</a>
+      <a href="#">Security</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2026 PDFMagic AI · All rights reserved · Made with ♥ in India</span>
+    <div class="footer-legal">
+      <a href="#" onclick="showPage('privacy');return false;">Privacy</a>
+      <a href="#" onclick="showPage('terms');return false;">Terms</a>
+      <a href="#" onclick="showPage('contact');return false;">Contact</a>
+    </div>
+  </div>
+</footer>
+
+<!-- COOKIE BANNER -->
+<div class="cookie-banner" id="cookie-banner">
+  <div class="cookie-text">🍪 We use cookies to improve your experience and analyze site usage. See our <a href="#" onclick="showPage('privacy');return false;">Privacy Policy</a> for details.</div>
+  <div class="cookie-btns">
+    <button class="cookie-decline" onclick="dismissCookie()">Decline</button>
+    <button class="cookie-accept" onclick="acceptCookie()">Accept All</button>
+  </div>
+</div>
+
+<!-- BACK TO TOP -->
+<button class="back-top" id="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+  <svg viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+
+<script>
+// Page routing
+const pages = ['about','contact','privacy','terms','404'];
+function showPage(name) {
+  pages.forEach(p => {
+    const el = document.getElementById('page-' + p);
+    if(el) el.classList.toggle('active', p === name);
+  });
+  // Update title
+  const titles = {about:'About Us',contact:'Contact',privacy:'Privacy Policy',terms:'Terms of Service','404':'Page Not Found'};
+  document.title = 'PDFMagic — ' + (titles[name] || 'PDFMagic');
+  window.scrollTo(0,0);
+  // Update URL hash
+  window.location.hash = name;
+}
+
+// Check hash on load
+window.addEventListener('load', () => {
+  const hash = window.location.hash.replace('#','');
+  if(pages.includes(hash)) showPage(hash);
+  // Show cookie banner after delay if not seen
+  if(!localStorage.getItem('pm_cookie')) {
+    setTimeout(() => document.getElementById('cookie-banner').classList.add('show'), 1500);
+  }
+});
+
+// Mobile menu
+document.getElementById('hamburger').addEventListener('click', () => {
+  document.getElementById('mobile-menu').classList.toggle('open');
+});
+function closeMobile() { document.getElementById('mobile-menu').classList.remove('open'); }
+
+// Cookie
+function acceptCookie() { localStorage.setItem('pm_cookie','accepted'); document.getElementById('cookie-banner').classList.remove('show'); }
+function dismissCookie() { localStorage.setItem('pm_cookie','declined'); document.getElementById('cookie-banner').classList.remove('show'); }
+
+// Back to top
+window.addEventListener('scroll', () => {
+  document.getElementById('back-top').classList.toggle('show', window.scrollY > 400);
+});
+
+// Contact form
+function submitContact() {
+  const name = document.getElementById('cf-name').value.trim();
+  const email = document.getElementById('cf-email').value.trim();
+  const msg = document.getElementById('cf-message').value.trim();
+  if(!name || !email || !msg) { alert('Please fill in all required fields.'); return; }
+  const btn = document.getElementById('cf-submit');
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(() => {
+    btn.classList.remove('loading'); btn.disabled = false;
+    document.getElementById('contact-form').style.display = 'none';
+    document.getElementById('contact-success').style.display = 'block';
+  }, 2000);
+}
+</script>
+</body>
+</html>

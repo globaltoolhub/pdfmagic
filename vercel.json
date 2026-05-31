@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "name": "pdfmagic",
+  "routes": [
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/app",       "dest": "/app.html" },
+    { "src": "/login",     "dest": "/login.html" },
+    { "src": "/signup",    "dest": "/login.html" },
+    { "src": "/dashboard", "dest": "/dashboard.html" },
+    { "src": "/pricing",   "dest": "/payments.html" },
+    { "src": "/blog",      "dest": "/seo-blog.html" },
+    { "src": "/analytics", "dest": "/analytics.html" },
+    { "src": "/docs",      "dest": "/api-docs.html" },
+    { "src": "/about",     "dest": "/pages.html" },
+    { "src": "/contact",   "dest": "/pages.html" },
+    { "src": "/privacy",   "dest": "/pages.html" },
+    { "src": "/terms",     "dest": "/pages.html" },
+    { "src": "/sitemap.xml","dest": "/sitemap.xml" },
+    { "src": "/robots.txt", "dest": "/robots.txt" },
+    { "src": "/",          "dest": "/index.html" },
+    { "src": "/(.*)",      "dest": "/pages.html" }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-XSS-Protection", "value": "1; mode=block" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "https://pdfmagic.io" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
+  ],
+  "env": {
+    "ANTHROPIC_API_KEY":      "@anthropic_api_key",
+    "STRIPE_SECRET_KEY":      "@stripe_secret_key",
+    "STRIPE_WEBHOOK_SECRET":  "@stripe_webhook_secret",
+    "FIREBASE_PROJECT_ID":    "@firebase_project_id",
+    "FIREBASE_CLIENT_EMAIL":  "@firebase_client_email",
+    "FIREBASE_PRIVATE_KEY":   "@firebase_private_key",
+    "APP_URL":                "@app_url",
+    "ALLOWED_ORIGIN":         "@allowed_origin"
+  }
+}

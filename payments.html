@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDFMagic — Upgrade to Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0D0D;--ink2:#444;--ink3:#888;--paper:#F8F8F6;
+  --accent:#1A56DB;--accent-l:#EEF3FF;--border:#E5E5E0;
+  --success:#16A34A;--success-l:#F0FDF4;--error:#DC2626;
+  --radius:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh;}
+
+/* NAV */
+nav{background:white;border-bottom:1px solid var(--border);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--ink);display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo .dot{width:28px;height:28px;background:var(--accent);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.nav-logo .dot svg{width:14px;height:14px;fill:white;}
+.nav-logo span{color:var(--accent);}
+.nav-right a{font-size:14px;color:var(--ink3);text-decoration:none;margin-left:24px;}
+.nav-right a:hover{color:var(--accent);}
+
+/* HERO */
+.hero{padding:60px 5vw 40px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--accent-l);color:var(--accent);border:1px solid #c7d9ff;padding:5px 14px;border-radius:100px;font-size:12px;font-weight:500;margin-bottom:16px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;margin-bottom:12px;}
+.hero h1 em{font-style:normal;color:var(--accent);}
+.hero p{font-size:16px;color:var(--ink2);max-width:500px;margin:0 auto;font-weight:300;}
+
+/* TOGGLE */
+.toggle-row{display:flex;align-items:center;justify-content:center;gap:14px;margin:32px 0 0;}
+.toggle-label{font-size:14px;color:var(--ink2);}
+.toggle-switch{position:relative;width:48px;height:26px;cursor:pointer;}
+.toggle-switch input{display:none;}
+.toggle-track{width:100%;height:100%;background:var(--border);border-radius:100px;transition:.3s;}
+.toggle-switch input:checked~.toggle-track{background:var(--accent);}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;background:white;border-radius:50%;box-shadow:0 1px 4px rgba(0,0,0,.15);transition:.3s;}
+.toggle-switch input:checked~.toggle-thumb{left:25px;}
+.save-badge{background:#FEF3C7;color:#92400E;font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;}
+
+/* PRICING GRID */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1000px;margin:48px auto 0;padding:0 5vw 60px;}
+.price-card{background:white;border:1px solid var(--border);border-radius:20px;padding:32px;position:relative;overflow:hidden;transition:all .3s;}
+.price-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(0,0,0,.08);}
+.price-card.featured{background:var(--accent);border-color:var(--accent);color:white;}
+.popular-tag{position:absolute;top:0;right:24px;background:#F97316;color:white;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 12px;border-radius:0 0 8px 8px;}
+.plan-name{font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--ink3);margin-bottom:10px;}
+.price-card.featured .plan-name{color:rgba(255,255,255,.65);}
+.price-amt{font-family:'Syne',sans-serif;font-size:56px;font-weight:800;line-height:1;}
+.price-sub{font-size:13px;color:var(--ink3);margin:4px 0 24px;}
+.price-card.featured .price-sub{color:rgba(255,255,255,.65);}
+.price-divider{height:1px;background:var(--border);margin:0 0 24px;}
+.price-card.featured .price-divider{background:rgba(255,255,255,.2);}
+.feature-list{list-style:none;display:flex;flex-direction:column;gap:11px;margin-bottom:28px;}
+.feature-list li{display:flex;align-items:center;gap:10px;font-size:14px;}
+.price-card.featured .feature-list li{color:rgba(255,255,255,.9);}
+.f-check{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.f-check svg{width:10px;height:10px;stroke-width:3;fill:none;}
+.price-btn{width:100%;padding:13px;border-radius:10px;font-size:15px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .2s;}
+.btn-outline{background:var(--paper);color:var(--ink);border:1.5px solid var(--border);}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-white{background:white;color:var(--accent);}
+.btn-white:hover{background:#f0f4ff;}
+.btn-dark{background:var(--ink);color:white;}
+.btn-dark:hover{background:#333;}
+
+/* CHECKOUT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.checkout-modal{background:white;border-radius:20px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative;}
+.modal-header{padding:24px 28px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-header h2{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;}
+.modal-close{background:none;border:none;cursor:pointer;font-size:22px;color:var(--ink3);line-height:1;}
+.modal-body{padding:24px 28px;}
+.order-summary{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:20px;}
+.os-title{font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;}
+.os-item{display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;}
+.os-item.total{font-weight:600;font-size:15px;padding-top:8px;border-top:1px solid var(--border);margin-top:4px;}
+.form-label{font-size:13px;font-weight:500;color:var(--ink2);display:block;margin-bottom:6px;}
+.form-input{width:100%;padding:11px 14px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:'DM Sans',sans-serif;background:white;color:var(--ink);outline:none;transition:border .2s;margin-bottom:14px;}
+.form-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(26,86,219,.08);}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.card-field{border:1px solid var(--border);border-radius:9px;padding:11px 14px;margin-bottom:14px;background:white;display:flex;align-items:center;gap:10px;}
+.card-field-inner{flex:1;font-size:14px;color:var(--ink3);}
+.card-icons{display:flex;gap:6px;}
+.card-icon{width:32px;height:20px;background:var(--paper);border:1px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--ink3);}
+.security-note{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink3);margin-bottom:20px;}
+.security-note svg{width:14px;height:14px;stroke:var(--ink3);fill:none;stroke-width:2;flex-shrink:0;}
+.pay-btn{width:100%;padding:14px;background:var(--accent);color:white;border:none;border-radius:10px;font-size:16px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s;}
+.pay-btn:hover{background:#1344b8;}
+.pay-btn svg{width:16px;height:16px;stroke:white;fill:none;stroke-width:2;}
+.pay-btn .spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .8s linear infinite;display:none;}
+.pay-btn.loading .btn-text{display:none;}
+.pay-btn.loading .spinner{display:block;}
+.powered-row{text-align:center;margin-top:14px;font-size:12px;color:var(--ink3);}
+.powered-row a{color:var(--ink3);}
+
+/* SUCCESS STATE */
+.success-state{text-align:center;padding:40px 28px;}
+.success-icon{width:64px;height:64px;background:var(--success-l);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;}
+.success-state h3{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.success-state p{font-size:14px;color:var(--ink2);margin-bottom:24px;}
+.success-btn{background:var(--accent);color:white;border:none;padding:12px 28px;border-radius:9px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* FAQ */
+.faq-section{max-width:700px;margin:0 auto;padding:0 5vw 80px;}
+.faq-title{font-family:'Syne',sans-serif;font-size:28px;font-weight:700;text-align:center;margin-bottom:32px;}
+.faq-item{border-bottom:1px solid var(--border);padding:18px 0;cursor:pointer;}
+.faq-q{display:flex;justify-content:space-between;align-items:center;font-size:15px;font-weight:500;}
+.faq-arrow{font-size:20px;color:var(--ink3);transition:transform .3s;}
+.faq-item.open .faq-arrow{transform:rotate(45deg);}
+.faq-a{font-size:14px;color:var(--ink2);line-height:1.7;max-height:0;overflow:hidden;transition:max-height .4s,padding .3s;}
+.faq-item.open .faq-a{max-height:200px;padding-top:12px;}
+
+/* TRUST STRIP */
+.trust-strip{background:white;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 5vw;display:flex;align-items:center;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:60px;}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink2);}
+.trust-item svg{width:16px;height:16px;stroke:var(--success);fill:none;stroke-width:2;}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:768px){.pricing-grid{grid-template-columns:1fr}.trust-strip{gap:20px}}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="nav-logo">
+    <div class="dot"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    PDF<span>Magic</span>
+  </a>
+  <div class="nav-right">
+    <a href="app.html">Try Free</a>
+    <a href="blog.html">Blog</a>
+    <a href="login.html">Sign In</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">⚡ Simple, transparent pricing</div>
+  <h1>Start free. Scale when<br>you're <em>ready.</em></h1>
+  <p>No contracts, no hidden fees. Cancel anytime. Upgrade or downgrade as you need.</p>
+
+  <div class="toggle-row">
+    <span class="toggle-label">Monthly</span>
+    <label class="toggle-switch">
+      <input type="checkbox" id="annual-toggle" onchange="toggleBilling()">
+      <div class="toggle-track"></div>
+      <div class="toggle-thumb"></div>
+    </label>
+    <span class="toggle-label">Annual <span class="save-badge">Save 40%</span></span>
+  </div>
+</div>
+
+<!-- PRICING CARDS -->
+<div class="pricing-grid">
+
+  <!-- FREE -->
+  <div class="price-card">
+    <div class="plan-name">Free</div>
+    <div class="price-amt">$0</div>
+    <div class="price-sub">forever · no card needed</div>
+    <div class="price-divider"></div>
+    <ul class="feature-list">
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>3 PDFs per day</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Up to 5MB file size</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>4 summary styles</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Basic Q&A chat</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>24+ output languages</li>
+    </ul>
+    <button class="price-btn btn-outline" onclick="window.location='app.html'">Get Started Free</button>
+  </div>
+
+  <!-- PRO -->
+  <div class="price-card featured">
+    <div class="popular-tag">Most Popular</div>
+    <div class="plan-name">Pro</div>
+    <div class="price-amt" id="pro-price">$9<span style="font-size:28px;font-weight:400">.99</span></div>
+    <div class="price-sub" id="pro-period">per month · cancel anytime</div>
+    <div class="price-divider"></div>
+    <ul class="feature-list">
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>Unlimited PDFs</li>
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>Up to 50MB file size</li>
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>All 4 summary styles</li>
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>Unlimited Q&A chat</li>
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>Priority AI processing</li>
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>No ads ever</li>
+      <li><div class="f-check" style="background:rgba(255,255,255,.2)"><svg viewBox="0 0 24 24" style="stroke:white"><polyline points="20 6 9 17 4 12"/></svg></div>Download summaries</li>
+    </ul>
+    <button class="price-btn btn-white" onclick="openCheckout('Pro', 9.99)">Upgrade to Pro →</button>
+  </div>
+
+  <!-- BUSINESS -->
+  <div class="price-card">
+    <div class="plan-name">Business</div>
+    <div class="price-amt" id="biz-price">$29<span style="font-size:28px;font-weight:400">.99</span></div>
+    <div class="price-sub" id="biz-period">per month · cancel anytime</div>
+    <div class="price-divider"></div>
+    <ul class="feature-list">
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Everything in Pro</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>API access (10K calls/mo)</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>5 team seats included</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Bulk PDF processing</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Custom branding / white-label</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Priority email support</li>
+      <li><div class="f-check" style="background:#EEF3FF"><svg viewBox="0 0 24 24" style="stroke:#1A56DB"><polyline points="20 6 9 17 4 12"/></svg></div>Analytics dashboard</li>
+    </ul>
+    <button class="price-btn btn-dark" onclick="openCheckout('Business', 29.99)">Upgrade to Business →</button>
+  </div>
+
+</div>
+
+<!-- TRUST STRIP -->
+<div class="trust-strip">
+  <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>256-bit SSL encryption</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Cancel anytime — no questions asked</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>7-day money-back guarantee</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Payments secured by Stripe</div>
+</div>
+
+<!-- FAQ -->
+<div class="faq-section">
+  <div class="faq-title">Frequently asked questions</div>
+  <div class="faq-item open"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel anytime?<span class="faq-arrow">+</span></div><div class="faq-a">Yes, absolutely. You can cancel your subscription at any time from your account settings. You'll keep Pro access until the end of your billing period. No questions asked, no penalty.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is there a free trial for Pro?<span class="faq-arrow">+</span></div><div class="faq-a">You can use the free plan forever with 3 PDFs per day. If you upgrade to Pro and aren't satisfied within 7 days, we'll give you a full refund — no questions asked.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What payment methods do you accept?<span class="faq-arrow">+</span></div><div class="faq-a">We accept all major credit and debit cards (Visa, Mastercard, American Express), UPI, and net banking for Indian users via Stripe. All payments are processed securely.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I get a GST invoice?<span class="faq-arrow">+</span></div><div class="faq-a">Yes! After payment, you can download a GST-compliant invoice from your account settings. Perfect for Indian businesses claiming input tax credit.</div></div>
+  <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What is the API and who is it for?<span class="faq-arrow">+</span></div><div class="faq-a">The API lets developers integrate PDFMagic's summarization directly into their own apps, tools, or workflows. It's available on the Business plan and comes with 10,000 API calls per month and full documentation.</div></div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkout-modal">
+  <div class="checkout-modal">
+    <div id="checkout-form-view">
+      <div class="modal-header">
+        <h2>Complete your upgrade</h2>
+        <button class="modal-close" onclick="closeCheckout()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="order-summary">
+          <div class="os-title">Order Summary</div>
+          <div class="os-item"><span id="plan-name-display">Pro Plan</span><span id="plan-price-display">$9.99/mo</span></div>
+          <div class="os-item"><span>Unlimited PDFs</span><span>✓</span></div>
+          <div class="os-item"><span>Priority AI</span><span>✓</span></div>
+          <div class="os-item total"><span>Total today</span><span id="total-display">$9.99</span></div>
+        </div>
+
+        <label class="form-label">Email address</label>
+        <input type="email" class="form-input" id="pay-email" placeholder="you@example.com">
+
+        <label class="form-label">Full name</label>
+        <input type="text" class="form-input" id="pay-name" placeholder="Rahul Sharma">
+
+        <label class="form-label">Card number</label>
+        <div class="card-field">
+          <div class="card-field-inner" id="card-number-field" contenteditable="true" oninput="formatCard(this)">4242 4242 4242 4242</div>
+          <div class="card-icons">
+            <div class="card-icon">VISA</div>
+            <div class="card-icon">MC</div>
+          </div>
+        </div>
+
+        <div class="input-row">
+          <div>
+            <label class="form-label">Expiry</label>
+            <input type="text" class="form-input" placeholder="MM / YY" maxlength="7">
+          </div>
+          <div>
+            <label class="form-label">CVC</label>
+            <input type="text" class="form-input" placeholder="123" maxlength="3">
+          </div>
+        </div>
+
+        <div class="security-note">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Your payment is secured by Stripe with 256-bit SSL encryption. We never store your card details.
+        </div>
+
+        <button class="pay-btn" id="pay-btn" onclick="processPayment()">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="btn-text">Pay & Upgrade Now</span>
+          <div class="spinner"></div>
+        </button>
+        <div class="powered-row">Powered by <a href="https://stripe.com" target="_blank">Stripe</a> · <a href="#">Privacy Policy</a></div>
+      </div>
+    </div>
+
+    <div id="checkout-success-view" style="display:none;">
+      <div class="success-state">
+        <div class="success-icon">🎉</div>
+        <h3>Payment successful!</h3>
+        <p>Welcome to Pro! Your account has been upgraded. You now have unlimited access to all PDFMagic features.</p>
+        <button class="success-btn" onclick="window.location='app.html'">Go to Dashboard →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let isAnnual = false;
+
+function toggleBilling() {
+  isAnnual = document.getElementById('annual-toggle').checked;
+  const proPrice = isAnnual ? '$5<span style="font-size:28px;font-weight:400">.99</span>' : '$9<span style="font-size:28px;font-weight:400">.99</span>';
+  const bizPrice = isAnnual ? '$17<span style="font-size:28px;font-weight:400">.99</span>' : '$29<span style="font-size:28px;font-weight:400">.99</span>';
+  const period = isAnnual ? 'per month · billed annually' : 'per month · cancel anytime';
+  document.getElementById('pro-price').innerHTML = proPrice;
+  document.getElementById('biz-price').innerHTML = bizPrice;
+  document.getElementById('pro-period').textContent = period;
+  document.getElementById('biz-period').textContent = period;
+}
+
+function openCheckout(plan, price) {
+  const displayPrice = isAnnual ? (price * 0.6).toFixed(2) : price.toFixed(2);
+  document.getElementById('plan-name-display').textContent = plan + ' Plan';
+  document.getElementById('plan-price-display').textContent = '$' + displayPrice + '/mo';
+  document.getElementById('total-display').textContent = '$' + displayPrice;
+  document.getElementById('checkout-form-view').style.display = 'block';
+  document.getElementById('checkout-success-view').style.display = 'none';
+  document.getElementById('checkout-modal').classList.add('open');
+}
+
+function closeCheckout() { document.getElementById('checkout-modal').classList.remove('open'); }
+
+document.getElementById('checkout-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('checkout-modal')) closeCheckout();
+});
+
+function processPayment() {
+  const email = document.getElementById('pay-email').value.trim();
+  const name = document.getElementById('pay-name').value.trim();
+  if (!email || !name) { alert('Please fill in your email and name.'); return; }
+  const btn = document.getElementById('pay-btn');
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(() => {
+    btn.classList.remove('loading'); btn.disabled = false;
+    document.getElementById('checkout-form-view').style.display = 'none';
+    document.getElementById('checkout-success-view').style.display = 'block';
+  }, 2500);
+}
+
+function formatCard(el) {
+  let val = el.textContent.replace(/\D/g,'').substring(0,16);
+  el.textContent = val.replace(/(.{4})/g,'$1 ').trim();
+  const range = document.createRange(), sel = window.getSelection();
+  range.selectNodeContents(el); range.collapse(false);
+  sel.removeAllRanges(); sel.addRange(range);
+}
+
+function toggleFaq(el) {
+  const item = el.parentElement;
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+  if (!isOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>

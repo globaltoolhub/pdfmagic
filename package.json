@@ -1,0 +1,22 @@
+{
+  "name": "pdfmagic",
+  "version": "1.0.0",
+  "description": "AI-powered PDF Summarizer — Summarize any PDF in 10 seconds",
+  "private": true,
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod",
+    "install-deps": "npm install"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.52.0",
+    "firebase-admin": "^12.0.0",
+    "stripe": "^14.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": ["pdf", "ai", "summarizer", "saas"],
+  "author": "PDFMagic AI",
+  "license": "UNLICENSED"
+}

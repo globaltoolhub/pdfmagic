@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard
+Disallow: /account
+Disallow: /settings
+
+# Sitemap location
+Sitemap: https://pdfmagic.io/sitemap.xml
+
+# Crawl delay (be kind to servers)
+Crawl-delay: 1
