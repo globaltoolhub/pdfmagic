@@ -1,4 +1,4 @@
-# 🚀 PDFMagic AI — Complete Website Package
+# 🚀 PDFMagic AI —   Complete Website Package
 ## Full Production-Ready Website — All 10 Pages
 
 ---
